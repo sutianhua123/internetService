@@ -75,6 +75,7 @@ def updateAddress():
 
 def updatetranspondAddress(address):
     command = f"./gost -L tcp://:443/{address}:443 &"
+    print(command)
     subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.DEVNULL)
 
 
