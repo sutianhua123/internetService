@@ -101,7 +101,7 @@ def getPublicInternetAddress():
 
 def putChineseNetStatusTODatabase(status):
     with open('InternetService-status.txt', 'w', encoding='utf-8') as file:
-        file.write(str(status))
+        file.write(f"{status}:")
     uploadFile('InternetService-status.txt', 'InternetService/InternetService-status.txt', 'markdown-storage-service')
 
 
@@ -157,10 +157,12 @@ rules:
     return String
 
 
-def controlChineseNet(chineseAddress):
+def controlChineseNet(chineseAddress,PublicInternetAddress):
     chineseNetStatus = getChineseNetStatus(chineseAddress)
-    if not chineseNetStatus:
-        putChineseNetStatusTODatabase(0)
+    if chineseNetStatus: 
+        putChineseNetStatusTODatabase(f"1:{PublicInternetAddress}")
+    else:
+        putChineseNetStatusTODatabase(f"0:{PublicInternetAddress}")
     print(f"chineseNetStatus:{chineseNetStatus}")
 
 
@@ -223,7 +225,7 @@ if __name__ == '__main__':
             PublicInternetAddress = getPublicInternetAddress()
             usageDict = get_instance_data_usage('intetnetServer')
             time.sleep(10)
-            controlChineseNet(chineseAddress)  # 控制中国网络状态
+            controlChineseNet(chineseAddress,PublicInternetAddress)  # 控制中国网络状态
             time.sleep(10)
             controlSpeed(usageDict)  # 控制当前服务网络速度
             time.sleep(10)
