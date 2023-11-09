@@ -1,10 +1,8 @@
 #!/usr/bin/python3
 import subprocess
 import time
-from datetime import time
 import urllib.request
 import boto3
-import psutil
 from boto3.session import Session
 import json
 
@@ -110,3 +108,4 @@ if __name__ == '__main__':
                                    stdin=subprocess.DEVNULL)
         except Exception as e:
             print(e)
+        time.sleep(10)
