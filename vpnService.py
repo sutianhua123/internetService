@@ -219,13 +219,16 @@ def controlSubscribeForClash(usageDict, chineseAddress, PublicInternetAddress):
 if __name__ == '__main__':
     chineseAddress = '8.134.39.24'
     while True:
-        PublicInternetAddress = getPublicInternetAddress()
-        usageDict = get_instance_data_usage('intetnetServer')
-        time.sleep(10)
-        controlChineseNet(chineseAddress)  # 控制中国网络状态
-        time.sleep(10)
-        controlSpeed(usageDict)  # 控制当前服务网络速度
-        time.sleep(10)
-        controlSubscribeForV2ray(usageDict, chineseAddress, PublicInternetAddress)
-        controlSubscribeForClash(usageDict, chineseAddress, PublicInternetAddress)
-        time.sleep(30)
+        try:
+            PublicInternetAddress = getPublicInternetAddress()
+            usageDict = get_instance_data_usage('intetnetServer')
+            time.sleep(10)
+            controlChineseNet(chineseAddress)  # 控制中国网络状态
+            time.sleep(10)
+            controlSpeed(usageDict)  # 控制当前服务网络速度
+            time.sleep(10)
+            controlSubscribeForV2ray(usageDict, chineseAddress, PublicInternetAddress)
+            controlSubscribeForClash(usageDict, chineseAddress, PublicInternetAddress)
+            time.sleep(30)
+        except Exception as e:
+            print(e)
