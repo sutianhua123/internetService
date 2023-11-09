@@ -1,11 +1,20 @@
 import requests
 import subprocess
 
+
+def getPublicInternetAddress():
+    internetAddress = ""
+    try:
+        internetAddress = subprocess.check_output("curl -4 ifconfig.me", shell=True, text=True)
+    except subprocess.CalledProcessError as e:
+        pass
+    return internetAddress
+
+
 def createdCertificate():
     try:
         # 发送GET请求到ifconfig.me，并获取响应内容
-        response = requests.get('https://ifconfig.me')
-        public_ip = response.text.strip()
+        public_ip = getPublicInternetAddress()
         print(public_ip)
         subprocess.run("openssl ecparam -genkey -name prime256v1 -out ca.key", shell=True, check=True)
         subprocess.run(f"openssl req -new -x509 -days 36500 -key ca.key -out ca.crt -subj '/CN={public_ip}'",
