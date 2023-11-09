@@ -97,13 +97,18 @@ if __name__ == '__main__':
 
             if addressAtatusDict['status'] == '0':
                 updateAddress()
+                print("更新ip成功")
+            else:
+                print("国际ip正常")
 
             # 端口流量转发控制
             if addressAtatusDict['address'] != preAddress:
                 if preAddress == '':
                     preAddress = addressAtatusDict['address']
                     updatetranspondAddress(preAddress)
+                    print("成功端口转发")
                 else:
+                    print("需要重启")
                     subprocess.run('reboot', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    stdin=subprocess.DEVNULL)
         except Exception as e:
