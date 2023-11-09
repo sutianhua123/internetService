@@ -3,6 +3,7 @@ import subprocess
 
 def createdCertificate():
     try:
+        # 发送GET请求到ifconfig.me，并获取响应内容
         response = requests.get('https://ifconfig.me')
         public_ip = response.text.strip()
         print(public_ip)
@@ -11,4 +12,17 @@ def createdCertificate():
                        shell=True, check=True)
     except Exception as e:
         return str(e)
-createdCertificate()
+    return public_ip
+
+def updateNginxConf(certificateIP):
+    with open('/etc/nginx/nginx2.conf', 'r') as file:
+        text = file.read()
+    text = text.replace("localhost", certificateIP)
+    with open('/etc/nginx/nginx.conf', 'w') as file:
+        file.write(text)
+
+if __name__ == '__main__':
+    # 生成证书
+    certificateIP = createdCertificate()
+    # 对nginx.conf文件进行更新
+    updateNginxConf(certificateIP)
