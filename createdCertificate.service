@@ -1,0 +1,10 @@
+[Unit]
+Description=createdCertificate
+
+[Service]
+ExecStart=python3 /root/createdCertificate.py
+Restart=always
+WorkingDirectory=/root
+
+[Install]
+WantedBy=multi-user.target
