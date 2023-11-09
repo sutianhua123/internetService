@@ -6,7 +6,6 @@ import boto3
 from boto3.session import Session
 import json
 
-
 def uploadFile(originalPath, endPath, bucketName):
     with open('key.json', 'r') as file:
         Data = json.load(file)
@@ -17,7 +16,6 @@ def uploadFile(originalPath, endPath, bucketName):
     upload_data = open(originalPath, 'rb')
     file_obj = s3.Bucket(bucketName).put_object(Key=endPath, Body=upload_data)
     print(file_obj)
-
 
 def stopAddress(instance_name):
     region_name = 'ap-southeast-1'
@@ -36,7 +34,6 @@ def stopAddress(instance_name):
     except Exception as e:
         print(f"停止实例 {instance_name} 失败: {str(e)}")
         return False
-
 
 def startAddress(instance_name):
     region_name = 'ap-southeast-1'
@@ -57,7 +54,6 @@ def startAddress(instance_name):
         print(f"启动实例 {instance_name} 失败: {str(e)}")
         return False
 
-
 def putChineseNetStatusTODatabase(status):
     with open('InternetService-status.txt', 'w', encoding='utf-8') as file:
         file.write(str(status))
@@ -72,13 +68,6 @@ def updateAddress():
     # 修改网络状态
     putChineseNetStatusTODatabase(1)
 
-./gost -L tcp://:55555/54.169.5.59:443 &
-def updatetranspondAddress(address):
-    command = f"./gost -L tcp://:443/{address}:443 &"
-    print(command)
-    subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.DEVNULL)
-
-
 def getAddressAtatus():
     with urllib.request.urlopen(
             'https://markdown-storage-service.s3.ap-southeast-1.amazonaws.com/InternetService/InternetService-status.txt') as url:
@@ -87,7 +76,6 @@ def getAddressAtatus():
     status = addressAtatusList[0]
     address = addressAtatusList[1]
     return {"status": status, "address": address}
-
 
 if __name__ == '__main__':
     while True:
