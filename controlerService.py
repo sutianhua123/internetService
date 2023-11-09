@@ -89,10 +89,10 @@ def getAddressAtatus():
 
 
 if __name__ == '__main__':
+    preAddress = ''
     while True:
         try:
             # 网络状态控制
-            preAddress = ''
             addressAtatusDict = getAddressAtatus()
 
             if addressAtatusDict['status'] == '0':
