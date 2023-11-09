@@ -136,15 +136,13 @@ log-level: info
 external-controller: 127.0.0.1:9090
 proxies:
   - {name: Singapore Internet Service, server: serverName1, port: 443, type: vmess, uuid: af41686b-cb85-494a-a554-eeaa1514bca7, alterId: 0, cipher: auto, tls: true,skip-cert-verify: true, servername: www.harvard.edu, network: ws, ws-opts: {path: /xNGJjYTciLA0KICAiYWlkIjogIjAiLA0KICAic2N5IjogInplcm8iLA0KICAibmV0, headers: {Host: www.harvard.edu}}}
-  - {name: GuangZhou Transfer Service, server: serverName2, port: 443, type: vmess, uuid: af41686b-cb85-494a-a554-eeaa1514bca7, alterId: 0, cipher: auto, tls: true,skip-cert-verify: true, servername: www.harvard.edu, network: ws, ws-opts: {path: /xNGJjYTciLA0KICAiYWlkIjogIjAiLA0KICAic2N5IjogInplcm8iLA0KICAibmV0, headers: {Host: www.harvard.edu}}}
 
 proxy-groups:
   - name: 国际互联网
     type: select
     proxies:
       - Singapore Internet Service
-      - GuangZhou Transfer Service
-  
+
   - name: 中国互联网
     type: select
     proxies:
@@ -159,7 +157,7 @@ rules:
 
 def controlChineseNet(chineseAddress,PublicInternetAddress):
     chineseNetStatus = getChineseNetStatus(chineseAddress)
-    if chineseNetStatus: 
+    if chineseNetStatus:
         putChineseNetStatusTODatabase(f"1:{PublicInternetAddress}")
     else:
         putChineseNetStatusTODatabase(f"0:{PublicInternetAddress}")
@@ -193,9 +191,8 @@ def controlSubscribeForV2ray(usageDict, chineseAddress, PublicInternetAddress):
     overflow = round(usageDict['overflow'])
     statusString = f"used:{used} free:{free} overflow:{overflow}"
     subscribe1 = v2ray_subscribe(PublicInternetAddress, "Singapore Internet Service")
-    subscribe2 = v2ray_subscribe(chineseAddress, "GuangZhou Transfer Service")
     subscribe3 = v2ray_subscribe(statusString, 'internetStatus')
-    v2rayString = f'{subscribe1}\n{subscribe2}\n{subscribe3}'
+    v2rayString = f'{subscribe1}\n{subscribe3}'
     with open('SubscribeForV2ray.txt', 'w', encoding='utf-8') as file:
         file.write(v2rayString)
     uploadFile('SubscribeForV2ray.txt', 'InternetService/SubscribeForV2ray-ICJwb3J0IjogIjQ0.txt',
