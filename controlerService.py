@@ -72,7 +72,7 @@ def updateAddress():
     # 修改网络状态
     putChineseNetStatusTODatabase(1)
 
-
+./gost -L tcp://:55555/54.169.5.59:443 &
 def updatetranspondAddress(address):
     command = f"./gost -L tcp://:443/{address}:443 &"
     print(command)
@@ -90,28 +90,15 @@ def getAddressAtatus():
 
 
 if __name__ == '__main__':
-    preAddress = ''
     while True:
         try:
             # 网络状态控制
             addressAtatusDict = getAddressAtatus()
-
             if addressAtatusDict['status'] == '0':
                 updateAddress()
                 print("更新ip成功")
             else:
                 print("国际ip正常")
-
-            # 端口流量转发控制
-            if addressAtatusDict['address'] != preAddress:
-                if preAddress == '':
-                    preAddress = addressAtatusDict['address']
-                    updatetranspondAddress(preAddress)
-                    print("成功端口转发")
-                else:
-                    print("需要重启")
-                    subprocess.run('reboot', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                   stdin=subprocess.DEVNULL)
         except Exception as e:
             print(e)
         time.sleep(10)
