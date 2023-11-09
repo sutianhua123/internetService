@@ -1,0 +1,10 @@
+[Unit]
+Description=vpnService
+
+[Service]
+ExecStart=python3 /root/vpnService.py
+Restart=always
+WorkingDirectory=/root
+
+[Install]
+WantedBy=multi-user.target
