@@ -1,0 +1,10 @@
+[Unit]
+Description=controlerService
+
+[Service]
+ExecStart=python3 /root/controlerService.py
+WorkingDirectory=/root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
