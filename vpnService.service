@@ -2,6 +2,7 @@
 Description=vpnService
 
 [Service]
+ExecStartPre=/bin/sleep 30
 ExecStart=python3 /root/vpnService.py
 Restart=always
 WorkingDirectory=/root
