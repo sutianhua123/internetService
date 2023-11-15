@@ -1,3 +1,5 @@
+import random
+
 import requests
 import subprocess
 
@@ -23,12 +25,20 @@ def createdCertificate():
         return str(e)
     return public_ip
 
+
 def updateNginxConf(certificateIP):
     with open('/etc/nginx/nginx2.conf', 'r') as file:
         text = file.read()
     text = text.replace("localhost", certificateIP)
+    port = random.randint(50000, 60000)
+    text = text.replace("preport", str(port))
+
     with open('/etc/nginx/nginx.conf', 'w') as file:
         file.write(text)
+
+    with open('/root/nginxPort', 'w') as file:
+        file.write(str(port))
+    
 
 if __name__ == '__main__':
     # 生成证书
