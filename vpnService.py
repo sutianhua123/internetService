@@ -28,7 +28,7 @@ def get_current_month_last_day_last_time():
     return datetime.now().replace(month=datetime.now().month + 1, day=1, hour=0, minute=0, second=0)
 
 
-def get_instance_data_usage(instance_name):
+def get_instance_data_usage(instance_name,regionName):
     import time
     region_name = 'ap-southeast-1'
     with open('key.json', 'r') as file:
@@ -98,10 +98,10 @@ def getPublicInternetAddress():
     return internetAddress
 
 
-def putChineseNetStatusTODatabase(status,statusAddress):
+def putChineseNetStatusTODatabase(status,InternetStatusAddress):
     with open('InternetService-status.txt', 'w', encoding='utf-8') as file:
         file.write(f"{status}:")
-    uploadFile('InternetService-status.txt', 'InternetService/SingaporeInternetStatus.txt', 'markdown-storage-service')
+    uploadFile('InternetService-status.txt', InternetStatusAddress, 'markdown-storage-service')
 
 def controlSpeed(usageDict,InternetPortName):
     def set_bandwidth_limit(interface, download, upload):
@@ -124,12 +124,12 @@ def controlSpeed(usageDict,InternetPortName):
     print("controlSpeed")
 
 
-def selectChineseNet(chineseAddress, PublicInternetAddress,statusAddress):
+def selectChineseNet(chineseAddress, PublicInternetAddress,InternetStatusAddress):
     chineseNetStatus = getChineseNetStatus(chineseAddress)
     if chineseNetStatus:
-        putChineseNetStatusTODatabase(f"1:{PublicInternetAddress}", statusAddress)
+        putChineseNetStatusTODatabase(f"1:{PublicInternetAddress}", InternetStatusAddress)
     else:
-        putChineseNetStatusTODatabase(f"0:{PublicInternetAddress}", statusAddress)
+        putChineseNetStatusTODatabase(f"0:{PublicInternetAddress}", InternetStatusAddress)
     print(f"chineseNetStatus:{chineseNetStatus}")
 
 
@@ -169,16 +169,17 @@ def controlSubscribeForV2ray(PublicInternetAddress, InternetName, V2rayAddress):
 
 if __name__ == '__main__':
     chineseAddress = '8.134.39.24'
-    InternetServiceName = "America-Internet"
-    SingaporeInternetStatus = "InternetService/AmericaInternetStatus.txt"
-    V2rayAddressName = "InternetService/SubscribeForV2ray-AmericaInternet-ICJwb3J0IjogIjQ0.txt"
+    regionName = "us-east-1a"
+    InternetServiceName = "Singapore-Intetnet"
+    InternetStatusAddress = "InternetService/SingaporeInternetStatus.txt"
+    V2rayAddressName = "InternetService/SubscribeForV2ray-ICJwb3J0IjogIjQ0.txt"
     InternetPortName = "ens5"  # 网口名称 通过 ip link show   命令查看
     while True:
         try:
             PublicInternetAddress = getPublicInternetAddress()  # 获取公网IP
-            usageDict = get_instance_data_usage(InternetServiceName)  # 获取目标服务器的流量使用情况
+            usageDict = get_instance_data_usage(InternetServiceName,regionName)  # 获取目标服务器的流量使用情况
             time.sleep(10)
-            selectChineseNet(chineseAddress, PublicInternetAddress, SingaporeInternetStatus)  # 查询中国网络状态 并提交状态到数据库
+            selectChineseNet(chineseAddress, PublicInternetAddress, InternetStatusAddress)  # 查询中国网络状态 并提交状态到数据库
             time.sleep(10)
             controlSpeed(usageDict,InternetPortName)  # 控制当前服务网络速度
             time.sleep(10)
