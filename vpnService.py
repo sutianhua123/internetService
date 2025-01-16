@@ -168,10 +168,10 @@ def controlSubscribeForV2ray(PublicInternetAddress, InternetName, V2rayAddress):
 
 if __name__ == '__main__':
     chineseAddress = '8.134.39.24'
-    regionName = "us-east-1a"
-    InternetServiceName = "Singapore-Intetnet"
-    InternetStatusAddress = "InternetService/SingaporeInternetStatus.txt"
-    V2rayAddressName = "InternetService/SubscribeForV2ray-ICJwb3J0IjogIjQ0.txt"
+    regionName = "ap-southeast-1"  # 新加坡 ap-southeast-1  美国 us-east-1
+    InternetServiceName = "Singapore-Internet"  # 新加坡 Singapore-Internet   美国  America-Internet
+    InternetStatusAddress = "InternetService/SingaporeInternetStatus.txt"  # 新加坡 "InternetService/SingaporeInternetStatus.txt"   美国  "InternetService/AmericaInternetStatus.txt"
+    V2rayAddressName = "InternetService/SubscribeForV2ray-ICJwb3J0IjogIjQ0.txt"  # 新加坡 "InternetService/SubscribeForV2ray-ICJwb3J0IjogIjQ0.txt"   美国  "InternetService/SubscribeForV2ray-America-ICJwb3J0IjogIjQ0.txt"
     InternetPortName = "ens5"  # 网口名称 通过 ip link show   命令查看
     while True:
         try:
