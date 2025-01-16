@@ -169,9 +169,9 @@ def controlSubscribeForV2ray(PublicInternetAddress, InternetName, V2rayAddress):
 
 if __name__ == '__main__':
     chineseAddress = '8.134.39.24'
-    InternetServiceName = "Singapore-Intetnet"
-    SingaporeInternetStatus = "InternetService/SingaporeInternetStatus.txt"
-    V2rayAddressName = "InternetService/SubscribeForV2ray-ICJwb3J0IjogIjQ0.txt"
+    InternetServiceName = "America-Internet"
+    SingaporeInternetStatus = "InternetService/AmericaInternetStatus.txt"
+    V2rayAddressName = "InternetService/SubscribeForV2ray-AmericaInternet-ICJwb3J0IjogIjQ0.txt"
     InternetPortName = "ens5"  # 网口名称 通过 ip link show   命令查看
     while True:
         try:
