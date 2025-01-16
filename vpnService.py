@@ -30,12 +30,11 @@ def get_current_month_last_day_last_time():
 
 def get_instance_data_usage(instance_name,regionName):
     import time
-    region_name = 'ap-southeast-1'
     with open('key.json', 'r') as file:
         Data = json.load(file)
     access_key = Data['access_key']
     secret_key = Data['secret_key']
-    client = boto3.client('lightsail', region_name=region_name, aws_access_key_id=access_key,
+    client = boto3.client('lightsail', region_name=regionName, aws_access_key_id=access_key,
                           aws_secret_access_key=secret_key)
     start_time = get_current_month_first_day_zero_time()
     end_time = get_current_month_last_day_last_time()
