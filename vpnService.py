@@ -9,7 +9,6 @@ import json
 
 
 def uploadFile(originalPath, endPath, bucketName):
-
     with open('key.json', 'r') as file:
         Data = json.load(file)
     access_key = Data['access_key']
@@ -62,15 +61,15 @@ def get_instance_data_usage(instance_name):
     monthEnd = datetime.now().replace(month=datetime.now().month + 1, day=1, hour=0, minute=0, second=0).timestamp()
     current_timestamp = time.time()
 
-    overflow = round((current_timestamp - monthStart) / (monthEnd - monthStart) * 2000 - used, 3)
+    overflow = round((current_timestamp - monthStart) / (monthEnd - monthStart) * 1000 - used, 3)
     position = {
         "used": used,
-        "free": 2000 - used,
+        "free": 1000 - used,
         "overflow": overflow
     }
     return position
 
-
+# 测试连接中国网络是否畅通 通过中国境内控制服务器的IP地址测试
 def getChineseNetStatus(address):
     index = 0
     while True:
@@ -99,13 +98,12 @@ def getPublicInternetAddress():
     return internetAddress
 
 
-def putChineseNetStatusTODatabase(status):
+def putChineseNetStatusTODatabase(status,statusAddress):
     with open('InternetService-status.txt', 'w', encoding='utf-8') as file:
         file.write(f"{status}:")
-    uploadFile('InternetService-status.txt', 'InternetService/InternetService-status.txt', 'markdown-storage-service')
+    uploadFile('InternetService-status.txt', 'InternetService/SingaporeInternetStatus.txt', 'markdown-storage-service')
 
-
-def controlSpeed(usageDict):
+def controlSpeed(usageDict,InternetPortName):
     def set_bandwidth_limit(interface, download, upload):
         # 清除在指定接口上的所有限制
         subprocess.run(['wondershaper', 'clear', interface], check=True)
@@ -117,59 +115,33 @@ def controlSpeed(usageDict):
         subprocess.run(['wondershaper', 'clear', interface], check=True)
 
     if usageDict != None and usageDict['overflow'] < 0:
-        set_bandwidth_limit('ens5', '750', '750')
+        set_bandwidth_limit(InternetPortName, '375', '375')
     else:
         try:
-            remove_bandwidth_limit('ens5')
+            remove_bandwidth_limit(InternetPortName)
         except Exception as e:
             print(f"{e}：不需要清除eth0")
     print("controlSpeed")
 
 
-def getClashString():
-    String = """
-port: 7890
-socks-port: 7891
-allow-lan: false
-mode: Rule
-log-level: info
-external-controller: 127.0.0.1:9090
-proxies:
-  - {name: Singapore Internet Service, server: serverName1, port: 443, type: vmess, uuid: af41686b-cb85-494a-a554-eeaa1514bca7, alterId: 0, cipher: auto, tls: true,skip-cert-verify: true, servername: www.harvard.edu, network: ws, ws-opts: {path: /xNGJjYTciLA0KICAiYWlkIjogIjAiLA0KICAic2N5IjogInplcm8iLA0KICAibmV0, headers: {Host: www.harvard.edu}}}
-
-proxy-groups:
-  - name: 国际互联网
-    type: select
-    proxies:
-      - Singapore Internet Service
-
-  - name: 中国互联网
-    type: select
-    proxies:
-    - DIRECT
-
-rules:
-  - GEOIP,CN,中国互联网
-  - MATCH,国际互联网
-"""
-    return String
-
-
-def controlChineseNet(chineseAddress,PublicInternetAddress):
+def selectChineseNet(chineseAddress, PublicInternetAddress,statusAddress):
     chineseNetStatus = getChineseNetStatus(chineseAddress)
     if chineseNetStatus:
-        putChineseNetStatusTODatabase(f"1:{PublicInternetAddress}")
+        putChineseNetStatusTODatabase(f"1:{PublicInternetAddress}", statusAddress)
     else:
-        putChineseNetStatusTODatabase(f"0:{PublicInternetAddress}")
+        putChineseNetStatusTODatabase(f"0:{PublicInternetAddress}", statusAddress)
     print(f"chineseNetStatus:{chineseNetStatus}")
 
 
+# 生成 v2ray 订阅链接b64编码
 def v2ray_subscribe(address, name):
+    with open('nginxPort', 'r', encoding='utf-8') as file:
+        port = file.read()
     server_info = {
         "v": "2",
         "ps": name,
         "add": address,
-        "port": "443",
+        "port": port,
         "id": "af41686b-cb85-494a-a554-eeaa1514bca7",
         "aid": "0",
         "scy": "zero",
@@ -185,49 +157,32 @@ def v2ray_subscribe(address, name):
     return subscription_link
 
 
-def controlSubscribeForV2ray(usageDict, chineseAddress, PublicInternetAddress):
-    used = round(usageDict['used'])
-    free = round(usageDict['free'])
-    overflow = round(usageDict['overflow'])
-    statusString = f"used:{used} free:{free} overflow:{overflow}"
-    subscribe1 = v2ray_subscribe(PublicInternetAddress, "Singapore Internet Service")
-    subscribe3 = v2ray_subscribe(statusString, 'internetStatus')
-    v2rayString = f'{subscribe1}\n{subscribe3}'
+def controlSubscribeForV2ray(PublicInternetAddress, InternetName, V2rayAddress):
+    subscribe1 = v2ray_subscribe(PublicInternetAddress, InternetName)
+    v2rayString = f'{subscribe1}'
     with open('SubscribeForV2ray.txt', 'w', encoding='utf-8') as file:
         file.write(v2rayString)
-    uploadFile('SubscribeForV2ray.txt', 'InternetService/SubscribeForV2ray-ICJwb3J0IjogIjQ0.txt',
+    uploadFile('SubscribeForV2ray.txt', V2rayAddress,
                'markdown-storage-service')
     print(v2rayString)
 
 
-def controlSubscribeForClash(usageDict, chineseAddress, PublicInternetAddress):
-    ClashString = getClashString()
-    used = round(usageDict['used'])
-    free = round(usageDict['free'])
-    overflow = round(usageDict['overflow'])
-    statusString = f"used:{used} free:{free} overflow:{overflow}"
-    ClashString = ClashString.replace('serverName1', PublicInternetAddress)
-    ClashString = ClashString.replace('serverName2', chineseAddress)
-    with open('SubscribeForClash.yml', 'w', encoding='utf-8') as file:
-        file.write(ClashString)
-    uploadFile('SubscribeForClash.yml', 'InternetService/SubscribeForClash-wgInBvcnQiOiAiND.yml',
-               'markdown-storage-service')
-    print(statusString)
-
-
 if __name__ == '__main__':
     chineseAddress = '8.134.39.24'
+    InternetServiceName = "Singapore-Intetnet"
+    SingaporeInternetStatus = "InternetService/SingaporeInternetStatus.txt"
+    V2rayAddressName = "InternetService/SubscribeForV2ray-ICJwb3J0IjogIjQ0.txt"
+    InternetPortName = "ens5"  # 网口名称 通过 ip link show   命令查看
     while True:
         try:
-            PublicInternetAddress = getPublicInternetAddress()
-            usageDict = get_instance_data_usage('intetnetServer')
+            PublicInternetAddress = getPublicInternetAddress()  # 获取公网IP
+            usageDict = get_instance_data_usage(InternetServiceName)  # 获取目标服务器的流量使用情况
             time.sleep(10)
-            controlChineseNet(chineseAddress,PublicInternetAddress)  # 控制中国网络状态
+            selectChineseNet(chineseAddress, PublicInternetAddress, SingaporeInternetStatus)  # 查询中国网络状态 并提交状态到数据库
             time.sleep(10)
-            controlSpeed(usageDict)  # 控制当前服务网络速度
+            controlSpeed(usageDict,InternetPortName)  # 控制当前服务网络速度
             time.sleep(10)
-            controlSubscribeForV2ray(usageDict, chineseAddress, PublicInternetAddress)
-            controlSubscribeForClash(usageDict, chineseAddress, PublicInternetAddress)
-            time.sleep(30)
+            controlSubscribeForV2ray(PublicInternetAddress, InternetServiceName, V2rayAddressName)  # 提交链接到数据库
         except Exception as e:
             print(e)
+        time.sleep(120)
